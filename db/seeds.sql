@@ -1,8 +1,34 @@
-1 John Doe Sales Lead Sales 100000 null
-2 Mike Chan Salesperson Sales 80000 John Doe
-3 Ashley Rodriguez Lead Engineer Engineering 150000 null
-4 Kevin Tupik Software Engineer Engineering 120000 Ashley Rodriguez
-5 Kunal Singh Account Manager Finance 160000 null
-6 Malia Brown Accountant Finance 125000 Kunal Singh
-7 Sarah Lourd Legal Team Lead Legal 250000 null
-8 Tom Allen Lawyer Legal 190000 Sarah Lourd
+INSERT INTO department (name)
+VALUES ("Sales"),
+       ("Engineering"),
+       ("Finance"),
+       ("Legal");
+
+INSERT INTO role (title, salary, department_id)
+VALUES ("Sales Lead", 100000 , 1),
+       ("Salesperson", 80000, 1),
+       ("Lead Engineer", 150000, 2),
+       ("Software Engineer", 120000, 2),
+       ("Account Manger", 160000, 3),
+       ("Accountant", 125000, 3),
+       ("Legal Team Lead", 250000, 4),
+       ("Lawyer", 190000, 4);
+
+INSERT INTO employee (first_name, last_name, role_id)
+VALUES ("John", "Doe", 1),
+       ("Mike", "Chan", 2),
+       ("Ashley", "Rodriguez", 3),
+       ("Kevin", "Tupik", 4),
+       ("Kunal", "Singh", 5),
+       ("Malia", "Brown", 6),
+       ("Sarah", "Lourd", 7),
+       ("Tom", "Allen", 8);
+
+UPDATE employee
+SET manager_id = 1 WHERE id = 2;
+UPDATE employee
+SET manager_id = 3  WHERE id = 4;
+UPDATE employee
+SET manager_id = 5  WHERE id = 6;
+UPDATE employee
+SET manager_id = 7  WHERE id = 8;
