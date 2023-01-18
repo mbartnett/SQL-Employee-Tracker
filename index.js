@@ -16,17 +16,26 @@ db.query('SELECT * FROM employees', function (err, results) {
     console.log(results);
 })
 
+//
+
+ ___               _                        __  __                                   
+| __| _ __   _ __ | | ___  _  _  ___  ___  |  \/  | __ _  _ _   __ _  __ _  ___  _ _ 
+| _| | '  \ | '_ \| |/ _ \| || |/ -_)/ -_) | |\/| |/ _` || ' \ / _` |/ _` |/ -_)| '_|
+|___||_|_|_|| .__/|_|\___/ \_, |\___|\___| |_|  |_|\__,_||_||_|\__,_|\__, |\___||_|  
+            |_|            |__/                                      |___/           
+
 // Questions
 
 "What would you like to do?"
 
-"View Employees",
-"View Employees by Department",
+"View All Employees",
 "Add Employee",
-"Remove Employee",
 "Update Employee Role",
+"View All Roles"
 "Add Role",
-"End"
+"View All Departments",
+"Add Department",
+"Quit"
 
 "What is the name of the department?"
 "What is the name of the role?"
