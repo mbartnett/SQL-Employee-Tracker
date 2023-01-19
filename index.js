@@ -24,7 +24,7 @@ const questions = [
         type: "list",
         name: "Selection",
         message: "What would you like to do?",
-        choices: ["View All Employees", "Add Employee", "Update Employee Role", "View All Roles", "Add Role", "View All Departments", "Add Department", "Update Department ID", "Delete Department", "Quit"],
+        choices: ["View All Employees", "Add Employee", "Update Employee Role", "Delete Employee", "View All Roles", "Add Role", "View All Departments", "Add Department", "Update Department ID", "Delete Department", "Quit"],
     }
 ]
 
@@ -37,14 +37,16 @@ function init() {
             addEmployee()
         } else if (response.Selection === "Update Employee Role") {
             updateEmployeeRole()
+        } else if (response.Selection === "Delete Employee") {
+            deleteEmployee()
         } else if (response.Selection === "View All Departments") {
             viewAllDepartments()
         } else if (response.Selection === "Add Department") {
             addDepartment()
+        } else if (response.Selection === "Update Department ID") {
+            updateDepartmentId()
         } else if (response.Selection === "Delete Department") {
             deleteDepartment()
-        } else if (response.Selection === "Update Department") {
-            updateDepartmentId()
         } else {
             quit()
         }
@@ -53,7 +55,6 @@ function init() {
 
 // Employee functions
 // `View All Employees`
-
 function viewAllEmployees() {
     db.query(`SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name as department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) as manager FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id LEFT JOIN employee manager ON manager.id = employee.manager_id`, (err, data) => {
         if (err) throw err
@@ -67,50 +68,82 @@ function addEmployee() {
     db.query(`SELECT id, title FROM role`, (err, data) => {
         if (err) throw err
         console.table(data)
-        inquirer.prompt([{
-            type: "input",
-            name: "first_name",
-            message: "What is the employee's first name?"
-        },
-        {
-            type: "input",
-            name: "last_name",
-            message: "What is the employee's last name?"
-        },
-        {
-            type: "input",
-            name: "role_id",
-            message: "What is the employee's role id?"
-        },
-        {
-            type: "input",
-            name: "manager_id",
-            message: "Who is the employee's manager id?"
-        }]).then(response => {
-            db.query(`SELECT * FROM role WHERE id = ${response.role_id}`, (err, data) => {
+        db.query(`SELECT MAX(id) as max_id FROM employee`, (err, data) => {
+            if (err) throw err
+            const nextId = data[0].max_id + 1;
+            db.query(`SELECT id, concat(first_name,' ',last_name) as name FROM employee`, (err, data) => {
                 if (err) throw err
-                if (data.length === 0) {
-                    console.log("Please enter a valid role id.")
-                    return addEmployee()
-                }
-            })
-            db.query(`SELECT * FROM employee WHERE id = ${response.manager_id}`, (err, data) => {
-                if (err) throw err
-                if (data.length === 0) {
-                    console.log("Please enter a valid manager id.")
-                    return addEmployee()
-                }
-            })
-            db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${response.first_name}', '${response.last_name}', ${response.role_id}, ${response.manager_id})`, (err, data) => {
-                if (err) throw err
-                console.log("Employee has been added to the database.")
-                init()
+                console.table(data)
+                inquirer.prompt([{
+                    type: "input",
+                    name: "first_name",
+                    message: "What is the employee's first name?"
+                },
+                {
+                    type: "input",
+                    name: "last_name",
+                    message: "What is the employee's last name?"
+                },
+                {
+                    type: "input",
+                    name: "role_id",
+                    message: "What is the employee's role ID?"
+                },
+                {
+                    type: "input",
+                    name: "manager_id",
+                    message: "What is the employee's manager's ID?"
+                }]).then(response => {
+                    db.query(`SELECT * FROM role WHERE id = ${response.role_id}`, (err, data) => {
+                        if (err) throw err
+                        if (data.length === 0) {
+                            console.log("Please enter a valid role id.")
+                            return addEmployee()
+                        }
+                    })
+                    db.query(`SELECT * FROM employee WHERE id = ${response.manager_id}`, (err, data) => {
+                        if (err) throw err
+                        if (data.length === 0) {
+                            console.log("Please enter a valid manager id.")
+                            return addEmployee()
+                        }
+                    })
+                    db.query(`INSERT INTO employee (id, first_name, last_name, role_id, manager_id) VALUES (${nextId},'${response.first_name}', '${response.last_name}', ${response.role_id}, ${response.manager_id})`, (err, data) => {
+                        if (err) throw err
+                        console.log("The employee has been added to the database.")
+                        init()
+                    })
+                })
             })
         })
     })
 }
 
 // `Update Employee Role`
+
+// `Delete Employee`
+function deleteEmployee() {
+    db.query(`SELECT * FROM employee`, (err, data) => {
+        console.table(data)
+        inquirer.prompt({
+            type: "input",
+            name: "id",
+            message: "Which employee would you like to delete by ID?"
+        }).then(response => {
+            db.query(`SET @count = 0;`, (err) => {
+                if (err) throw err
+                db.query(`UPDATE employee SET id = @count:= @count + 1;`, (err) => {
+                    if (err) throw err
+                    db.query(`DELETE FROM employee WHERE id = ${response.id}`, (err) => {
+                        if (err) throw err
+                        console.log("The employee has been deleted.")
+                        init()
+                    })
+                })
+            })
+        })
+    })
+}
 
 // Department functions
 // `View All Departments`
