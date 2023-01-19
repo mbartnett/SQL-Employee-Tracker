@@ -30,7 +30,7 @@ const questions = [
         type: "list",
         name: "Selection",
         message: "What would you like to do?",
-        choices: ["View All Employees", "View Employees By Manager", "View Employees By Department", "Add Employee", "Update Employee Role", "Delete Employee", "View All Roles", "Add Role", "View All Departments", "Add Department", "Delete Department", "Quit"],
+        choices: ["View All Departments", "View All Roles", "View All Employees", "View Employees By Manager", "View Employees By Department", "View Total Utilized Budget By Department", "Add Department", "Add Role", "Add Employee",  "Update Employee Manager", "Delete Department", "Delete Role", "Delete Employee",  "Quit"],
     }
 ]
 
@@ -47,16 +47,24 @@ function init() {
             viewEmployeesByManager()
         } else if (response.Selection === "View Employees By Department") {
             viewEmployeesByDepartment()
+        } else if (response.Selection === "View Total Utilized Budget By Department") {
+            viewTotalUtilizedBudgetByDepartment()
+        } else if (response.Selection === "Add Department") {
+            addDepartment()
+        } else if (response.Selection === "Add Role") {
+            addRole()
         } else if (response.Selection === "Add Employee") {
             addEmployee()
         } else if (response.Selection === "Update Employee Role") {
             updateEmployeeRole()
-        } else if (response.Selection === "Delete Employee") {
-            deleteEmployee()
-        } else if (response.Selection === "Add Department") {
-            addDepartment()
+        } else if (response.Selection === "Update Employee Manager") {
+            updateEmployeeManager()
         } else if (response.Selection === "Delete Department") {
             deleteDepartment()
+        } else if (response.Selection === "Delete Role") {
+            deleteRole()
+        } else if (response.Selection === "Delete Employee") {
+            deleteEmployee()
         } else {
             quit()
         }
@@ -118,11 +126,36 @@ function viewEmployeesByDepartment() {
     })
 }
 
+// `View Total Utilized Budget By Department
+function viewTotalUtilizedBudgetByDepartment() {
+    db.query(`SELECT department.name, SUM(role.salary) as total_budget FROM department LEFT JOIN role ON department.id = role.department_id GROUP BY department.name`, (err, data) => {
+        if (err) throw err;
+        console.table(data);
+        init();
+    });
+}
 
+// ADD FUNCTIONS
+// `Add Department`
+function addDepartment() {
+    db.query(`SELECT MAX(id) as max_id FROM department`, (err, data) => {
+        if (err) throw err;
+        const maxId = data[0].max_id;
+        inquirer.prompt([{
+            type: "input",
+            name: "name",
+            message: "What is the name of the department?"
+        }]).then(response => {
+            db.query(`INSERT INTO department (id, name) VALUES (${maxId + 1}, '${response.name}')`, (err) => {
+                if (err) throw err;
+                console.log(`The ${response.name}department has been added.`);
+                init();
+            });
+        });
+    });
+}
 
-
-// EDITING ALL BELOW ####
-
+// `Add Role`
 
 // `Add Employee`
 function addEmployee() {
@@ -180,6 +213,7 @@ function addEmployee() {
     })
 }
 
+// UPDATE FUNCTIONS
 // `Update Employee Role`
 function updateEmployeeRole() {
     db.query(`SELECT employee.id, CONCAT(employee.first_name, ' ', employee.last_name) as name, role.title as current_role FROM employee LEFT JOIN role ON employee.role_id = role.id`, (err, data) => {
@@ -216,6 +250,29 @@ function updateEmployeeRole() {
     })
 }
 
+// `Update Employee Manager`
+
+// DELETE FUNCTIONS
+// `Delete Department`
+function deleteDepartment() {
+    db.query(`SELECT * FROM department`, (err, data) => {
+        console.table(data)
+        inquirer.prompt([{
+            type: "input",
+            name: "id",
+            message: "What is the ID of the department you want to delete?"
+        }]).then(response => {
+            db.query(`DELETE FROM department WHERE id = ${response.id}`, (err, data) => {
+                if (err) throw err
+                console.log(`The department with id ${response.id} has been deleted.`)
+                init()
+            })
+        })
+    })
+}
+
+// `Delete Role`
+
 // `Delete Employee`
 function deleteEmployee() {
     db.query(`SELECT * FROM employee`, (err, data) => {
@@ -235,45 +292,6 @@ function deleteEmployee() {
                         init()
                     })
                 })
-            })
-        })
-    })
-}
-
-// Department functions
-
-// `Add Department`
-function addDepartment() {
-    db.query(`SELECT MAX(id) as max_id FROM department`, (err, data) => {
-        if (err) throw err;
-        const maxId = data[0].max_id;
-        inquirer.prompt([{
-            type: "input",
-            name: "name",
-            message: "What is the name of the department?"
-        }]).then(response => {
-            db.query(`INSERT INTO department (id, name) VALUES (${maxId + 1}, '${response.name}')`, (err) => {
-                if (err) throw err;
-                console.log(`The ${response.name}department has been added.`);
-                init();
-            });
-        });
-    });
-}
-
-// `Delete Department`
-function deleteDepartment() {
-    db.query(`SELECT * FROM department`, (err, data) => {
-        console.table(data)
-        inquirer.prompt([{
-            type: "input",
-            name: "id",
-            message: "What is the id of the department you want to delete?"
-        }]).then(response => {
-            db.query(`DELETE FROM department WHERE id = ${response.id}`, (err, data) => {
-                if (err) throw err
-                console.log(`The department with id ${response.id} has been deleted.`)
-                init()
             })
         })
     })
