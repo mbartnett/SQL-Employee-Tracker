@@ -30,27 +30,31 @@ const questions = [
         type: "list",
         name: "Selection",
         message: "What would you like to do?",
-        choices: ["View All Employees", "Add Employee", "Update Employee Role", "Delete Employee", "View All Roles", "Add Role", "View All Departments", "Add Department", "Update Department ID", "Delete Department", "Quit"],
+        choices: ["View All Employees", "View Employees By Manager", "View Employees By Department", "Add Employee", "Update Employee Role", "Delete Employee", "View All Roles", "Add Role", "View All Departments", "Add Department", "Delete Department", "Quit"],
     }
 ]
 
 // Launch the application
 function init() {
     inquirer.prompt(questions).then(response => {
-        if (response.Selection === "View All Employees") {
+        if (response.Selection === "View All Departments") {
+            viewAllDepartments()
+        } else if (response.Selection === "View All Roles") {
+            viewAllRoles()
+        } else if (response.Selection === "View All Employees") {
             viewAllEmployees()
+        } else if (response.Selection === "View Employees By Manager") {
+            viewEmployeesByManager()
+        } else if (response.Selection === "View Employees By Department") {
+            viewEmployeesByDepartment()
         } else if (response.Selection === "Add Employee") {
             addEmployee()
         } else if (response.Selection === "Update Employee Role") {
             updateEmployeeRole()
         } else if (response.Selection === "Delete Employee") {
             deleteEmployee()
-        } else if (response.Selection === "View All Departments") {
-            viewAllDepartments()
         } else if (response.Selection === "Add Department") {
             addDepartment()
-        } else if (response.Selection === "Update Department ID") {
-            updateDepartmentId()
         } else if (response.Selection === "Delete Department") {
             deleteDepartment()
         } else {
@@ -59,7 +63,24 @@ function init() {
     })
 }
 
-// Employee functions
+// VIEW FUNCTIONS
+// `View All Departments`
+function viewAllDepartments() {
+    db.query(`SELECT * FROM department`, (err, data) => {
+        console.table(data)
+        init()
+    })
+}
+
+// `View All Roles`
+function viewAllRoles() {
+    db.query(`SELECT role.id, role.title, department.name AS department, role.salary FROM role LEFT JOIN department ON role.department_id = department.id`, (err, data) => {
+        if (err) throw err;
+        console.table(data);
+        init();
+    });
+}
+
 // `View All Employees`
 function viewAllEmployees() {
     db.query(`SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name as department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) as manager FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id LEFT JOIN employee manager ON manager.id = employee.manager_id`, (err, data) => {
@@ -68,6 +89,40 @@ function viewAllEmployees() {
         init()
     })
 }
+
+// `View Employees By Manager`
+function viewEmployeesByManager() {
+    db.query(`SELECT employee.id, employee.first_name, employee.last_name, CONCAT(manager.first_name, ' ', manager.last_name) as manager, employee.manager_id FROM employee LEFT JOIN employee manager ON employee.manager_id = manager.id WHERE employee.manager_id IS NOT NULL`, (err, data) => {
+        if (err) throw err;
+        console.table(data);
+        init();
+    });
+}
+
+// `View Employees By Department`
+function viewEmployeesByDepartment() {
+    db.query(`SELECT id, name FROM department`, (err, data) => {
+        if (err) throw err
+        console.table(data);
+        inquirer.prompt([{
+            type: "input",
+            name: "departmentId",
+            message: "Enter the department ID you would like to view employees for."
+        }]).then(response => {
+            db.query(`SELECT role.id, employee.first_name, employee.last_name, role.title FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id WHERE department.id = ${response.departmentId}`, (err, data) => {
+                if (err) throw err
+                console.table(data);
+                init();
+            })
+        })
+    })
+}
+
+
+
+
+// EDITING ALL BELOW ####
+
 
 // `Add Employee`
 function addEmployee() {
@@ -110,7 +165,7 @@ function addEmployee() {
                     db.query(`SELECT * FROM employee WHERE id = ${response.manager_id}`, (err, data) => {
                         if (err) throw err
                         if (data.length === 0) {
-                            console.log("Please enter a valid manager id.")
+                            console.log("Please enter a valid manager's ID.")
                             return addEmployee()
                         }
                     })
@@ -126,6 +181,40 @@ function addEmployee() {
 }
 
 // `Update Employee Role`
+function updateEmployeeRole() {
+    db.query(`SELECT employee.id, CONCAT(employee.first_name, ' ', employee.last_name) as name, role.title as current_role FROM employee LEFT JOIN role ON employee.role_id = role.id`, (err, data) => {
+        if (err) throw err
+        console.table(data)
+        inquirer.prompt([{
+            type: "input",
+            name: "employee_id",
+            message: "Enter the ID of the employee you want to update."
+        },
+        {
+            type: "input",
+            name: "new_role_id",
+            message: "What is the employee's new role ID?"
+        },
+        {
+            type: "input",
+            name: "new_manager_id",
+            message: "What is the employee's new manager's ID?"
+        }]).then(response => {
+            db.query(`SELECT * FROM role WHERE id = ${response.newRoleId}`, (err, data) => {
+                if (err) throw err
+                if (data.length === 0) {
+                    console.log("Please enter a valid role ID.")
+                    return updateEmployeeRole()
+                }
+            })
+            db.query(`UPDATE employee SET role_id = ${response.newRoleId}, manager_id = ${response.newManagerId} WHERE id = ${response.employeeId}`, (err, data) => {
+                if (err) throw err
+                console.log("Employee's role and manager have been updated.")
+                init()
+            })
+        })
+    })
+}
 
 // `Delete Employee`
 function deleteEmployee() {
@@ -152,50 +241,24 @@ function deleteEmployee() {
 }
 
 // Department functions
-// `View All Departments`
-function viewAllDepartments() {
-    db.query(`SELECT * FROM department`, (err, data) => {
-        console.table(data)
-        init()
-    })
-}
 
 // `Add Department`
 function addDepartment() {
-    inquirer.prompt([{
-        type: "input",
-        name: "name",
-        message: "What is the name of the department?"
-    }]).then(response => {
-        db.query(`INSERT INTO department (name) VALUES ('${response.name}')`, (err) => {
-            if (err) throw err
-            console.log(`The department ${response.name} has been added.`)
-            init()
-        })
-    })
-}
-
-// `Update Department ID`
-function updateDepartmentId() {
-    db.query(`SELECT * FROM department`, (err, data) => {
-        console.table(data)
+    db.query(`SELECT MAX(id) as max_id FROM department`, (err, data) => {
+        if (err) throw err;
+        const maxId = data[0].max_id;
         inquirer.prompt([{
             type: "input",
-            name: "oldId",
-            message: "What is the ID of the department you want to change?"
-        },
-        {
-            type: "input",
-            name: "newId",
-            message: "What is the new ID for the department you want to change?"
+            name: "name",
+            message: "What is the name of the department?"
         }]).then(response => {
-            db.query(`UPDATE department SET id = ${response.newId} WHERE id = ${response.oldId}`, (err, data) => {
-                if (err) throw err
-                console.log(`The department id has been changed from ${response.oldId} to ${response.newId}`)
-                init()
-            })
-        })
-    })
+            db.query(`INSERT INTO department (id, name) VALUES (${maxId + 1}, '${response.name}')`, (err) => {
+                if (err) throw err;
+                console.log(`The ${response.name}department has been added.`);
+                init();
+            });
+        });
+    });
 }
 
 // `Delete Department`
