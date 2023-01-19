@@ -14,7 +14,13 @@ const db = mysql.createConnection({
 
 db.connect((err) => {
     if (err) throw err
-    console.log(`Connected to the employee database.`)
+    console.log(`
+###############################################
+#                                             #          
+#     CONNECTED TO THE EMPLOYEE DATABASE      #
+#                                             #
+############################################### 
+`)
     init()
 })
 
