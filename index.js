@@ -35,40 +35,92 @@ const questions = [
 ]
 
 // Launch the application
+// function init() {
+//     inquirer.prompt(questions).then(response => {
+//         if (response.Selection === "View All Departments") {
+//             viewAllDepartments()
+//         } else if (response.Selection === "View All Roles") {
+//             viewAllRoles()
+//         } else if (response.Selection === "View All Employees") {
+//             viewAllEmployees()
+//         } else if (response.Selection === "View Employees By Manager") {
+//             viewEmployeesByManager()
+//         } else if (response.Selection === "View Employees By Department") {
+//             viewEmployeesByDepartment()
+//         } else if (response.Selection === "View Total Utilized Budget By Department") {
+//             viewTotalUtilizedBudgetByDepartment()
+//         } else if (response.Selection === "Add Department") {
+//             addDepartment()
+//         } else if (response.Selection === "Add Role") {
+//             addRole()
+//         } else if (response.Selection === "Add Employee") {
+//             addEmployee()
+//         } else if (response.Selection === "Update Employee Role") {
+//             updateEmployeeRole()
+//         } else if (response.Selection === "Update Employee Manager") {
+//             updateEmployeeManager()
+//         } else if (response.Selection === "Delete Department") {
+//             deleteDepartment()
+//         } else if (response.Selection === "Delete Role") {
+//             deleteRole()
+//         } else if (response.Selection === "Delete Employee") {
+//             deleteEmployee()
+//         } else {
+//             quit()
+//         }
+//     })
+// }
+
 function init() {
     inquirer.prompt(questions).then(response => {
-        if (response.Selection === "View All Departments") {
-            viewAllDepartments()
-        } else if (response.Selection === "View All Roles") {
-            viewAllRoles()
-        } else if (response.Selection === "View All Employees") {
-            viewAllEmployees()
-        } else if (response.Selection === "View Employees By Manager") {
-            viewEmployeesByManager()
-        } else if (response.Selection === "View Employees By Department") {
-            viewEmployeesByDepartment()
-        } else if (response.Selection === "View Total Utilized Budget By Department") {
-            viewTotalUtilizedBudgetByDepartment()
-        } else if (response.Selection === "Add Department") {
-            addDepartment()
-        } else if (response.Selection === "Add Role") {
-            addRole()
-        } else if (response.Selection === "Add Employee") {
-            addEmployee()
-        } else if (response.Selection === "Update Employee Role") {
-            updateEmployeeRole()
-        } else if (response.Selection === "Update Employee Manager") {
-            updateEmployeeManager()
-        } else if (response.Selection === "Delete Department") {
-            deleteDepartment()
-        } else if (response.Selection === "Delete Role") {
-            deleteRole()
-        } else if (response.Selection === "Delete Employee") {
-            deleteEmployee()
-        } else {
-            quit()
+        switch (response.Selection) {
+            case "View All Departments":
+                viewAllDepartments();
+                break;
+            case "View All Roles":
+                viewAllRoles();
+                break;
+            case "View All Employees":
+                viewAllEmployees();
+                break;
+            case "View Employees By Manager":
+                viewEmployeesByManager();
+                break;
+            case "View Employees By Department":
+                viewEmployeesByDepartment();
+                break;
+            case "View Total Utilized Budget By Department":
+                viewTotalUtilizedBudgetByDepartment();
+                break;
+            case "Add Department":
+                addDepartment();
+                break;
+            case "Add Role":
+                addRole();
+                break;
+            case "Add Employee":
+                addEmployee();
+                break;
+            case "Update Employee Role":
+                updateEmployeeRole();
+                break;
+            case "Update Employee Manager":
+                updateEmployeeManager();
+                break;
+            case "Delete Department":
+                deleteDepartment();
+                break;
+            case "Delete Role":
+                deleteRole();
+                break;
+            case "Delete Employee":
+                deleteEmployee();
+                break;
+            default:
+                quit();
+                break;
         }
-    })
+    });
 }
 
 // VIEW FUNCTIONS
@@ -300,17 +352,17 @@ function updateEmployeeRole() {
 
 // `Update Employee Manager`
 function updateEmployeeManager() {
-    db.query(`SELECT employee.id, CONCAT(employee.first_name, ' ', employee.last_name) as name, manager.id as current_manager_id FROM employee LEFT JOIN employee manager ON manager.id = employee.manager_id`, (err, data) => {
+    db.query(`SELECT employee.id, CONCAT(employee.first_name, ' ', employee.last_name) as name, role.title, manager.id as current_manager_id FROM employee LEFT JOIN employee manager ON manager.id = employee.manager_id JOIN role ON employee.role_id = role.id`, (err, data) => {
         if (err) throw err
         console.table(data)
         inquirer.prompt([{
             type: "input",
-            name: "employeeId",
-            message: "Which employee's manager do you want to update? (Enter ID)"
+            name: "employee_id",
+            message: "Enter the ID of employee you want to update."
         },
         {
             type: "input",
-            name: "newManagerId",
+            name: "new_manager_id",
             message: "What is the new manager id?"
         }]).then(response => {
             db.query(`SELECT * FROM employee WHERE id = ${response.newManagerId}`, (err, data) => {
