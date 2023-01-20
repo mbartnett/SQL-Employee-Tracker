@@ -15,11 +15,11 @@ const db = mysql.createConnection({
 db.connect((err) => {
     if (err) throw err
     console.log(`
-###############################################
-#                                             #          
-#     CONNECTED TO THE EMPLOYEE DATABASE      #
-#                                             #
-############################################### 
+################################################
+#                                              #          
+#        CONNECTED TO EMPLOYEE DATABASE        #
+#                                              #
+################################################ 
 `)
     init()
 })
@@ -34,43 +34,7 @@ const questions = [
     }
 ]
 
-// Launch the application
-// function init() {
-//     inquirer.prompt(questions).then(response => {
-//         if (response.Selection === "View All Departments") {
-//             viewAllDepartments()
-//         } else if (response.Selection === "View All Roles") {
-//             viewAllRoles()
-//         } else if (response.Selection === "View All Employees") {
-//             viewAllEmployees()
-//         } else if (response.Selection === "View Employees By Manager") {
-//             viewEmployeesByManager()
-//         } else if (response.Selection === "View Employees By Department") {
-//             viewEmployeesByDepartment()
-//         } else if (response.Selection === "View Total Utilized Budget By Department") {
-//             viewTotalUtilizedBudgetByDepartment()
-//         } else if (response.Selection === "Add Department") {
-//             addDepartment()
-//         } else if (response.Selection === "Add Role") {
-//             addRole()
-//         } else if (response.Selection === "Add Employee") {
-//             addEmployee()
-//         } else if (response.Selection === "Update Employee Role") {
-//             updateEmployeeRole()
-//         } else if (response.Selection === "Update Employee Manager") {
-//             updateEmployeeManager()
-//         } else if (response.Selection === "Delete Department") {
-//             deleteDepartment()
-//         } else if (response.Selection === "Delete Role") {
-//             deleteRole()
-//         } else if (response.Selection === "Delete Employee") {
-//             deleteEmployee()
-//         } else {
-//             quit()
-//         }
-//     })
-// }
-
+// Application initiation
 function init() {
     inquirer.prompt(questions).then(response => {
         switch (response.Selection) {
