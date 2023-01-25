@@ -17,11 +17,11 @@ A command-line application that manages an employee database using Node.js, Inqu
 
 ## Installation
 
-You’ll need to use the MySQL2 package to connect to your MySQL database and perform queries, the Inquirer package to interact with the user via the command line, and the console.table package to print MySQL rows to the console.
+To use this application you’ll need to install [Node.js](https://nodejs.org/en/), the [MySQL2 package](https://www.npmjs.com/package/mysql2) to connect to your MySQL database and perform queries, the [Inquirer package](https://www.npmjs.com/package/inquirer) to interact with the user via the command line, and the [console.table package](https://www.npmjs.com/package/console.table) to print MySQL rows to the console.
 
 ## Usage
 
-TK
+After launching the application, use the menu to execute any of the following tasks: view all departments, view all roles, view all employees, view employees by manager, view employees by department, view the total utilized budget of a department, add a department, add a role, add an employee, update an employee role, update employee managers, delete departments, delete roles, delete employees, or quit the application.<br><br>![SQL Employee Tracker](./assets/SQL-Employee-Tracker.png)<br><br>[Video: SQL Employee Tracker](https://google.com)
 
 ## License
 
@@ -33,7 +33,7 @@ If you have a suggestion that would make this application better, please fork th
 
 ## Tests
 
-TK
+Test the application by typing "node index.js" in the command line while in the root directory.
 
 ## Questions
 
