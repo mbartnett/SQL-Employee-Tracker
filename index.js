@@ -30,7 +30,7 @@ const questions = [
         type: "list",
         name: "Selection",
         message: "What would you like to do?",
-        choices: ["View All Departments", "View All Roles", "View All Employees", "View Employees By Manager", "View Employees By Department", "View Total Utilized Budget By Department", "Add Department", "Add Role", "Add Employee",  "Update Employee Role", "Update Employee Manager", "Delete Department", "Delete Role", "Delete Employee",  "Quit"],
+        choices: ["View All Departments", "View All Roles", "View All Employees", "View Employees By Manager", "View Employees By Department", "View Total Utilized Budget By Department", "Add Department", "Add Role", "Add Employee", "Update Employee Role", "Update Employee Manager", "Delete Department", "Delete Role", "Delete Employee", "Quit"],
     }
 ]
 
@@ -292,27 +292,23 @@ function updateEmployeeRole() {
             type: "input",
             name: "new_role_id",
             message: "What is the employee's new role ID?"
-        },
-        {
-            type: "input",
-            name: "new_manager_id",
-            message: "What is the employee's new manager's ID?"
         }]).then(response => {
-            db.query(`SELECT * FROM role WHERE id = ${response.newRoleId}`, (err, data) => {
+            db.query(`SELECT * FROM role WHERE id = ${response.new_role_id}`, (err, data) => {
                 if (err) throw err
                 if (data.length === 0) {
                     console.log("Please enter a valid role ID.")
                     return updateEmployeeRole()
                 }
-            })
-            db.query(`UPDATE employee SET role_id = ${response.newRoleId}, manager_id = ${response.newManagerId} WHERE id = ${response.employeeId}`, (err, data) => {
-                if (err) throw err
-                console.log("Employee's role and manager have been updated.")
-                init()
+                db.query(`UPDATE employee SET role_id = ${response.new_role_id} WHERE id = ${response.employee_id}`, (err, data) => {
+                    if (err) throw err
+                    console.log("Employee's role has been updated.")
+                    init()
+                })
             })
         })
     })
 }
+
 
 // `Update Employee Manager`
 function updateEmployeeManager() {
@@ -329,17 +325,17 @@ function updateEmployeeManager() {
             name: "new_manager_id",
             message: "What is the new manager id?"
         }]).then(response => {
-            db.query(`SELECT * FROM employee WHERE id = ${response.newManagerId}`, (err, data) => {
+            db.query(`SELECT * FROM employee WHERE id = ${response.new_manager_id}`, (err, data) => {
                 if (err) throw err
                 if (data.length === 0) {
                     console.log("Please enter a valid manager id.")
                     return updateEmployeeManager()
                 }
-            })
-            db.query(`UPDATE employee SET manager_id = ${response.newManagerId} WHERE id = ${response.employeeId}`, (err, data) => {
-                if (err) throw err
-                console.log("Employee's manager has been updated.")
-                init()
+                db.query(`UPDATE employee SET manager_id = ${response.new_manager_id} WHERE id = ${response.employee_id}`, (err, data) => {
+                    if (err) throw err
+                    console.log("Employee's manager has been updated.")
+                    init()
+                })
             })
         })
     })
@@ -374,7 +370,7 @@ function deleteRole() {
             name: "roleId",
             message: "Enter the ID of the role you would like to delete."
         }]).then(response => {
-               db.query(`SELECT * FROM role WHERE id = ${response.roleId}`, (err, data) => {
+            db.query(`SELECT * FROM role WHERE id = ${response.roleId}`, (err, data) => {
                 if (err) throw err
                 if (data.length === 0) {
                     console.log("Please enter a valid role ID.")
