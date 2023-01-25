@@ -323,12 +323,12 @@ function updateEmployeeManager() {
         {
             type: "input",
             name: "new_manager_id",
-            message: "What is the new manager id?"
+            message: "What is the new manager ID?"
         }]).then(response => {
             db.query(`SELECT * FROM employee WHERE id = ${response.new_manager_id}`, (err, data) => {
                 if (err) throw err
                 if (data.length === 0) {
-                    console.log("Please enter a valid manager id.")
+                    console.log("Please enter a valid manager ID.")
                     return updateEmployeeManager()
                 }
                 db.query(`UPDATE employee SET manager_id = ${response.new_manager_id} WHERE id = ${response.employee_id}`, (err, data) => {
@@ -353,7 +353,7 @@ function deleteDepartment() {
         }]).then(response => {
             db.query(`DELETE FROM department WHERE id = ${response.id}`, (err, data) => {
                 if (err) throw err
-                console.log(`The department with id ${response.id} has been deleted.`)
+                console.log(`The department with ID ${response.id} has been deleted.`)
                 init()
             })
         })
@@ -415,7 +415,7 @@ function deleteEmployee() {
 function quit() {
     db.end(function (err) {
         if (err) throw err;
-        console.log('Goodbye!');
+        console.log('Hasta la vista, baby!');
         process.exit();
     });
 }
