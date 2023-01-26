@@ -21,7 +21,7 @@ To use this application you’ll need to install [Node.js](https://nodejs.org/en
 
 ## Usage
 
-After launching the application, use the menu to execute any of the following tasks: view all departments, view all roles, view all employees, view employees by manager, view employees by department, view the total utilized budget of a department, add a department, add a role, add an employee, update an employee role, update employee managers, delete departments, delete roles, delete employees, or quit the application.<br><br>![SQL Employee Tracker](./assets/SQL-Employee-Tracker.png)<br><br>[Video: SQL Employee Tracker](https://google.com)
+After launching the application, use the menu to execute any of the following tasks: view all departments, view all roles, view all employees, view employees by manager, view employees by department, view the total utilized budget of a department, add a department, add a role, add an employee, update an employee role, update employee managers, delete departments, delete roles, delete employees, or quit the application.<br><br>![SQL Employee Tracker](./assets/SQL-Employee-Tracker.png)<br><br>[Video: SQL Employee Tracker](https://drive.google.com/file/d/1FfNeI2sbh4aGLlYqNgbBfANtufOICkB2/view)
 
 ## License
 
